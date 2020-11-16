@@ -10,8 +10,7 @@
 #include <iostream>
 #include <sstream>
 
-int
-main()
+int main(int argc, char *argv[])
 {
   // create a socket using TCP IP
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -26,10 +25,13 @@ main()
   //   return 1;
   // }
 
+  std::string serverHost = argv[1];
+  int outPort = atoi(argv[2]);
+  std::string fileName = argv[3];
   struct sockaddr_in serverAddr;
   serverAddr.sin_family = AF_INET;
-  serverAddr.sin_port = htons(40000);     // short, network byte order
-  serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+  serverAddr.sin_port = htons(outPort);     // short, network byte order
+  serverAddr.sin_addr.s_addr = inet_addr(serverHost);
   memset(serverAddr.sin_zero, '\0', sizeof(serverAddr.sin_zero));
 
   // connect to the server

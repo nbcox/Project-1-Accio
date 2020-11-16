@@ -24,10 +24,24 @@ int main(int argc, char *argv[])
   //   perror("bind");
   //   return 1;
   // }
+  if (argc != 4) {
+    std::cerr << "ERROR: Not enough arguments!" << std::endl;
+    return 1;
+  }
 
-  std::string serverHost = argv[1];
-  int outPort = atoi(argv[2]);
-  std::string fileName = argv[3];
+  char* serverHost = argv[1];
+  /*if (serverHost != "127.0.0.1") {
+    std::cerr << "ERROR: Host must be 127.0.0.1 or localhost!" << std::endl;
+    return 1;
+  }*/
+
+  int outPort = atoi(argv[2]); // convert cmd line arg to int
+  if (outPort <= 1023) {
+    std::cerr << "ERROR: Ports 0-1023 are reserved!" << std::endl;
+    return 1;
+  }
+
+  char* fileName = argv[3];
   struct sockaddr_in serverAddr;
   serverAddr.sin_family = AF_INET;
   serverAddr.sin_port = htons(outPort);     // short, network byte order
@@ -56,7 +70,7 @@ int main(int argc, char *argv[])
   // send/receive data to/from connection
   bool isEnd = false;
   std::string input;
-  char buf[20] = {0};
+  char buf[100] = {0};
   std::stringstream ss;
 
   while (!isEnd) {
@@ -83,6 +97,10 @@ int main(int argc, char *argv[])
 
     ss.str("");
   }
+
+  /*FILE *fd = fopen(fileName, "rb");
+  fclose(fd);*/
+  std::cout << "Socket closed\n";
 
   close(sockfd);
 

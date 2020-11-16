@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 int main(int argc, char *argv[])
 {
@@ -23,7 +24,12 @@ int main(int argc, char *argv[])
   }
 
   // bind address to socket
-  int inPort = atoi(argv[1]);
+  int inPort = atoi(argv[1]); // convert cmd line arg to int
+  if (inPort <= 1023) {
+    std::cerr << "ERROR: Ports 0-1023 are reserved!" << std::endl;
+    return 1;
+  }
+
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(inPort);     // short, network byte order
@@ -40,6 +46,8 @@ int main(int argc, char *argv[])
     perror("listen");
     return 3;
   }
+  std::cout << "Server set up, waiting for connection" << std::endl;
+  std::cout << "Port number is: " << inPort << std::endl;
 
   // accept a new connection
   struct sockaddr_in clientAddr;
@@ -58,8 +66,14 @@ int main(int argc, char *argv[])
 
   // read/write data from/into the connection
   bool isEnd = false;
-  char buf[20] = {0};
+  char buf[100] = {0};
   std::stringstream ss;
+
+  //Test
+  /*FILE *fp;
+  read(clientSockfd, buf, 100);
+  fp = fopen("", "w");
+  fprintf(fp,"%s",buf);*/
 
   while (!isEnd) {
     memset(buf, '\0', sizeof(buf));
